@@ -1,11 +1,7 @@
-import logging
-from django import forms
 from haystack.forms import SearchForm as Base
-from haystack.constants import DJANGO_CT
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
-from djinn_contenttypes.registry import CTRegistry
-from pgsearch.utils import remove_punctuation, split_query
+from djinn_search.utils import split_query
 
 
 class BaseSearchForm(Base):
@@ -58,7 +54,7 @@ class BaseSearchForm(Base):
         return sqs
 
     def _filter_allowed(self, sqs):
-        
+
         """ Do check on allowed users on all content in the set """
 
         access_to = ['group_users', 'user_%s' % self.user.username]
