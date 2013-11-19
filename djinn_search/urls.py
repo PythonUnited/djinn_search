@@ -1,10 +1,10 @@
 from django.conf.urls.defaults import patterns, url
 from django.contrib.auth.decorators import login_required
-from pgsearch.views.base import SearchView
-from pgsearch.forms.base import SearchForm
+from djinn_search.views.base import SearchView
+from djinn_search.forms.base import SearchForm
 
 
-urlpatterns = patterns("pgsearch.views",
+urlpatterns = patterns("",
 
     url(r'^search/', login_required(
             SearchView(load_all=False,

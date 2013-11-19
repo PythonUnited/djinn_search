@@ -36,6 +36,6 @@ setup(name='djinn_search',
       test_suite="djinn_search",
       entry_points = """\
       [djinn.app]
-      js=djinn_search:get_js
+      urls=djinn_search:get_urls
       """
       )
