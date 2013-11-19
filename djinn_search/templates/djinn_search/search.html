@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block body_class %}searchresults{% endblock %}
+
+{% block container %}
+	
+{% if is_tainted_and_or %}
+<div class="alert">
+  {% blocktrans %}
+  The query you specified didn't return any results. 
+  Results shown are for the separate parts of the query.
+  {% endblocktrans %}
+</div>
+{% endif %}
+
+{% if not page.object_list %}
+<div class="alert">
+  {% trans "No results found" %}
+</div>
+{% endif %}
+
+{% if suggestions and not page.object_list %}
+{% trans "Did you mean" %}
+<ul>
+  {% for suggestion in suggestions %}
+  <li><a href="?q={{ suggestion }}">{{ suggestion }}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<section id="searchresults">
+  {% for result in page.object_list %}
+  {{ result }}
+  {% endfor %}
+</section>
+
+{% endblock %}
