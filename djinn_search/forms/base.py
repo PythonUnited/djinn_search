@@ -27,7 +27,7 @@ class BaseSearchForm(Base):
         # Apply extra filters before doing the actual query
         self.extra_filters()
 
-        self.run(**self.run_kwargs())
+        self.enable_run_kwargs()
         
         # Any post processing, like checking results and additional action.
         #
@@ -48,10 +48,9 @@ class BaseSearchForm(Base):
 
         pass
 
-    def run(self, **kwargs):
+    def enable_run_kwargs(self):
 
-        """ Execute the query, so as to allow post run actions and
-        determine the actual time of evaluation """
+        """ Enable override of actual run kwargs """
 
         _orig_build_params = self.sqs.query.build_params
 
@@ -63,8 +62,6 @@ class BaseSearchForm(Base):
             return kwargs
 
         self.sqs.query.build_params = _build_params
-
-        return self.sqs[:]
 
     def post_run(self):
 
