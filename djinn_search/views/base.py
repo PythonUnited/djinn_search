@@ -18,10 +18,15 @@ class BaseSearchView(Base):
 
     def is_tainted_and_or(self):
 
-        """ Is there an implicit 'OR' performed """
+        """ Is an implicit 'OR' performed? This may be the case if no
+        results were found with a query that contained multiple
+        terms. """
 
         return getattr(self.form, "and_or_tainted", False)
 
+    def extra_context(self):
+
+        return {"suggestion": self.results.query.get_spelling_suggestion()}
 
 class SearchView(BaseSearchView):
 
