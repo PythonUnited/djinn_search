@@ -155,3 +155,15 @@ class SearchForm(BaseSearchForm):
         if self.sqs.query.backend.include_spelling:
             return {'spelling_query':
                         AutoQuery(self.cleaned_data['q']).query_string}
+
+
+class FixedFilterSearchForm(SearchForm):
+
+    """ Form that enables preset filters """
+
+    @property
+    def fixed_filters(self):
+
+        """ Implement this call to return the filters that are required """
+
+        return []
