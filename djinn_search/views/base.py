@@ -26,7 +26,12 @@ class BaseSearchView(Base):
 
     def extra_context(self):
 
-        return {"suggestion": self.results.query.get_spelling_suggestion(),
+        suggestion = self.results.query.get_spelling_suggestion()
+
+        if not hasattr(suggestion, "encode"):
+            suggestion = ""
+
+        return {"suggestion": suggestion, 
                 "is_tainted_and_or": self.is_tainted_and_or}
 
 

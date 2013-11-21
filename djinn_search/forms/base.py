@@ -1,8 +1,10 @@
 from django.conf import settings
+from django import forms
 from haystack.forms import SearchForm as Base
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
 from djinn_search.utils import split_query
+from djinn_search.fields.contenttype import CTField
 
 
 class BaseSearchForm(Base):
@@ -10,10 +12,12 @@ class BaseSearchForm(Base):
     """ Base form for Djinn search. This always takes the user into
     account, to be able to check on allowed content. """
 
-    # Hold searchqueryset in local variable, to prevent early evaluation
-    #
-    sqs = None
-    
+    def __init__(self, *args, **kwargs):
+        self.allow_empty_query = kwargs.pop('allow_empty_query', False)
+        self.sqs = None
+
+        super(BaseSearchForm, self).__init__(*args, **kwargs)
+
     def search(self):
 
         """ Add extra filters to the base search, so as to allow
@@ -22,13 +26,16 @@ class BaseSearchForm(Base):
         searchqueryset, since it means that it is execeuted once
         more... """
 
-        self.sqs = super(BaseSearchForm, self).search()
+        if self.cleaned_data.get('q'):
+            self.sqs = super(BaseSearchForm, self).search()
+        else:
+            self.sqs = SearchQuerySet()
 
         # Apply extra filters before doing the actual query
         self.extra_filters()
 
         self.enable_run_kwargs()
-        
+
         # Any post processing, like checking results and additional action.
         #
         self.post_run()
@@ -38,7 +45,7 @@ class BaseSearchForm(Base):
     def run_kwargs(self):
 
         """ Specify a dict of keyword arguments that should be
-        provided to the query run """ 
+        provided to the query run """
 
         return {}
 
@@ -58,7 +65,7 @@ class BaseSearchForm(Base):
 
             kwargs = _orig_build_params()
             kwargs.update(self.run_kwargs())
-            
+
             return kwargs
 
         self.sqs.query.build_params = _build_params
@@ -79,6 +86,8 @@ class SearchForm(BaseSearchForm):
     was found. If the default search is 'AND', 'OR' is tried as
     well. """
 
+    content_type = CTField(required=False)
+
     # Tainted marker for default 'AND' that has been reinterpreted as 'OR',
     #
     and_or_tainted = False
@@ -95,22 +104,23 @@ class SearchForm(BaseSearchForm):
     def extra_filters(self):
 
         self._filter_allowed()
+        self._filter_ct()
 
     def post_run(self):
 
         self._detect_and_or()
-        
+
     def _detect_and_or(self):
-        
+
         """ let's see whether we have something useful. If not, we'll
         try the separate query terms that are regular words and go for
         an (OR query). Unless only one term was given in the first
         place... """
-        
+
         parts = split_query(self.cleaned_data['q'], self.sqs.query)
 
         if len(parts) > 1 and \
-                getattr(settings, 'HAYSTACK_DEFAULT_OPERATOR', "AND") == "AND" \
+                getattr(settings, 'HAYSTACK_DEFAULT_OPERATOR', "AND") == "AND"\
                 and not self.sqs.count():
 
             self.and_or_tainted = True
@@ -131,6 +141,12 @@ class SearchForm(BaseSearchForm):
             access_to.append('group_%d' % group.id)
 
         self.sqs = self.sqs.filter(allow_list__in=access_to)
+
+    def _filter_ct(self):
+
+        for ct in self.cleaned_data['content_type']:
+
+            self.sqs = self.sqs.filter(meta_ct=ct)
 
     def run_kwargs(self):
 
