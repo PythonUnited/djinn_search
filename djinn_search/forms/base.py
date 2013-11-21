@@ -109,8 +109,9 @@ class SearchForm(BaseSearchForm):
         
         parts = split_query(self.cleaned_data['q'], self.sqs.query)
 
-        if len(parts) > 1 and settings.HAYSTACK_DEFAULT_OPERATOR == "AND" and \
-                not sqs.count():
+        if len(parts) > 1 and \
+                getattr(settings, 'HAYSTACK_DEFAULT_OPERATOR', "AND") == "AND" \
+                and not self.sqs.count():
 
             self.and_or_tainted = True
 

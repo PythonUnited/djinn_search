@@ -26,8 +26,26 @@ class BaseSearchView(Base):
 
     def extra_context(self):
 
-        return {"suggestion": self.results.query.get_spelling_suggestion()}
+        return {"suggestion": self.results.query.get_spelling_suggestion(),
+                "is_tainted_and_or": self.is_tainted_and_or}
+
 
 class SearchView(BaseSearchView):
-
+    
     """ Basic search """
+
+    def create_response(self):
+
+        """
+        Generates the actual HttpResponse to send back to the
+        user. This may be an ajax call, in which case we set the
+        content type to plain.
+        """
+
+        res = super(SearchView, self).create_response()
+
+        if self.request.is_ajax():
+            res._headers['content-type'] = \
+                ('Content-Type', 'text/plain; charset=utf-8')
+
+        return res
