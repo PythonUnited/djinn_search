@@ -13,8 +13,9 @@ class BaseSearchForm(Base):
     account, to be able to check on allowed content. """
 
     def __init__(self, *args, **kwargs):
-        self.allow_empty_query = kwargs.pop('allow_empty_query', False)
+
         self.sqs = None
+        self.spelling_query = None
 
         super(BaseSearchForm, self).__init__(*args, **kwargs)
 
@@ -28,17 +29,19 @@ class BaseSearchForm(Base):
 
         if self.cleaned_data.get('q'):
             self.sqs = super(BaseSearchForm, self).search()
+            self.spelling_query = AutoQuery(self.cleaned_data['q']). \
+                query_string
         else:
             self.sqs = SearchQuerySet()
 
         # Apply extra filters before doing the actual query
         self.extra_filters()
 
-        self.enable_run_kwargs()
-
         # Any post processing, like checking results and additional action.
         #
         self.post_run()
+
+        self.enable_run_kwargs()
 
         return self.sqs
 
@@ -62,6 +65,8 @@ class BaseSearchForm(Base):
         _orig_build_params = self.sqs.query.build_params
 
         def _build_params(qry, **kwargs):
+
+            """ Allow for extra kwargs """
 
             kwargs = _orig_build_params()
             kwargs.update(self.run_kwargs())
@@ -158,8 +163,7 @@ class SearchForm(BaseSearchForm):
         """ Provide spelling query if INCLUDE_SPELLING is set """
 
         if self.sqs.query.backend.include_spelling:
-            return {'spelling_query':
-                        AutoQuery(self.cleaned_data['q']).query_string}
+            return {'spelling_query': self.spelling_query}
 
 
 class FixedFilterSearchForm(SearchForm):
