@@ -1,8 +1,8 @@
 from django.conf import settings
-from django import forms
 from haystack.forms import SearchForm as Base
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
+from haystack.constants import DJANGO_CT
 from djinn_search.utils import split_query
 from djinn_search.fields.contenttype import CTField
 
@@ -109,6 +109,7 @@ class SearchForm(BaseSearchForm):
     def post_run(self):
 
         self._detect_and_or()
+        self._add_ct_facet()
 
     def _detect_and_or(self):
 
@@ -147,6 +148,10 @@ class SearchForm(BaseSearchForm):
         for ct in self.cleaned_data['content_type']:
 
             self.sqs = self.sqs.filter(meta_ct=ct)
+
+    def _add_ct_facet(self):
+
+        self.sqs = self.sqs.facet(DJANGO_CT)
 
     def run_kwargs(self):
 

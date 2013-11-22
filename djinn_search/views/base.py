@@ -1,4 +1,5 @@
 from haystack.views import SearchView as Base
+from django.views.generic.detail import SingleObjectMixin
 
 
 class BaseSearchView(Base):
@@ -54,3 +55,32 @@ class SearchView(BaseSearchView):
                 ('Content-Type', 'text/plain; charset=utf-8')
 
         return res
+
+
+class CTSearchView(SearchView, SingleObjectMixin):
+
+    model = None
+
+    def __init__(self, *args, **kwargs):
+
+        self.model = kwargs.pop('model', None)
+        self.kwargs = kwargs
+
+        super(CTSearchView, self).__init__(*args, **kwargs)
+
+    def extra_context(self):
+
+        ctx = super(CTSearchView, self).extra_context()
+
+        ctx.update(self.get_context_data())
+    
+        ctx['object'] = self.object
+
+        return ctx
+
+    def __call__(self, request):
+
+        self.request = request
+        self.object = self.get_object()
+
+        super(CTSearchView, self).__call__(request)
