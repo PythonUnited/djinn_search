@@ -50,9 +50,9 @@ class SearchView(BaseSearchView):
 
         res = super(SearchView, self).create_response()
 
-        if self.request.is_ajax():
-            res._headers['content-type'] = \
-                ('Content-Type', 'text/plain; charset=utf-8')
+        #if self.request.is_ajax():
+        #    res._headers['content-type'] = \
+        #        ('Content-Type', 'text/plain; charset=utf-8')
 
         return res
 
