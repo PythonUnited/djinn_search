@@ -23,6 +23,10 @@ class CTField(CharField):
                 normalized.append(ct)
             elif len(ct.split(".")) == 1:
                 ct_info = CTRegistry.get(ct)
-                normalized.append("%s.%s" % (ct_info['app'], ct))
+                try:
+                    normalized.append("%s.%s" % (ct_info['app'], ct))
+                except:
+                    # igore odd ctypes
+                    pass
 
         return normalized
