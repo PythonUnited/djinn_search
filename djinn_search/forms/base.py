@@ -3,6 +3,7 @@ from haystack.forms import SearchForm as Base
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
 from haystack.constants import DJANGO_CT
+from haystack.backends import SQ
 from djinn_search.utils import split_query
 from djinn_search.fields.contenttype import CTField
 
@@ -158,9 +159,12 @@ class SearchForm(BaseSearchForm):
 
             self.and_or_tainted = True
 
-            aq = AutoQuery(self.cleaned_data['q'])
+            content_filter = SQ(content=AutoQuery(parts[0]))
 
-            self.sqs = self.sqs.filter_or(content=aq)
+            for part in parts[1:]:
+                content_filter = content_filter | SQ(content=AutoQuery(part))
+
+            self.sqs.query.query_filter.children[0] = content_filter
 
     def _filter_allowed(self):
 
