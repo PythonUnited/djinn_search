@@ -21,18 +21,28 @@ class BaseSearchForm(Base):
 
     def search(self):
 
-        """ Add extra filters to the base search, so as to allow
-        extending classes to do more sophisticated search. Other than
-        the default implementation of haystack we don't return the
-        searchqueryset, since it means that it is execeuted once
-        more... """
+        """ Sadly we have to override the base haystack search
+        completely. It just doesn't do what we want...  Add extra
+        filters to the base search, so as to allow extending classes
+        to do more sophisticated search. Other than the default
+        implementation of haystack we don't return the searchqueryset,
+        since it means that it is execeuted once more..."""
+
+        if not self.is_valid():
+            return self.no_query_found()
+
+        if not self.has_query:
+            return self.no_query_found()
 
         if self.cleaned_data.get('q'):
-            self.sqs = super(BaseSearchForm, self).search()
+            self.sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
             self.spelling_query = AutoQuery(self.cleaned_data['q']). \
                 query_string
         else:
             self.sqs = SearchQuerySet()
+
+        if self.load_all:
+            self.sqs = self.sqs.load_all()
 
         # Apply extra filters before doing the actual query
         self.extra_filters()
@@ -44,6 +54,13 @@ class BaseSearchForm(Base):
         self.enable_run_kwargs()
 
         return self.sqs
+
+    @property
+    def has_query(self):
+
+        """ Check whether anything at all was asked """
+
+        return filter(lambda x: x, self.cleaned_data.values())
 
     def run_kwargs(self):
 
@@ -92,6 +109,7 @@ class SearchForm(BaseSearchForm):
     well. """
 
     content_type = CTField(required=False)
+    meta_type = CTField(required=False)
 
     # Tainted marker for default 'AND' that has been reinterpreted as 'OR',
     #
@@ -104,12 +122,13 @@ class SearchForm(BaseSearchForm):
         self.user = kwargs['user']
         del kwargs['user']
 
-        return super(BaseSearchForm, self).__init__(*args, **kwargs)
+        return super(SearchForm, self).__init__(*args, **kwargs)
 
     def extra_filters(self):
 
         self._filter_allowed()
         self._filter_ct()
+        self._filter_meta_ct()
 
     def post_run(self):
 
@@ -151,6 +170,14 @@ class SearchForm(BaseSearchForm):
     def _filter_ct(self):
 
         for ct in self.cleaned_data['content_type']:
+
+            _filter = {DJANGO_CT: ct}
+
+            self.sqs = self.sqs.filter(**_filter)
+
+    def _filter_meta_ct(self):
+
+        for ct in self.cleaned_data['meta_type']:
 
             self.sqs = self.sqs.filter(meta_ct=ct)
 
