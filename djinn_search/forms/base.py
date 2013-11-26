@@ -47,6 +47,9 @@ class BaseSearchForm(Base):
         # Apply extra filters before doing the actual query
         self.extra_filters()
 
+        # Apply ordering
+        self.ordering()
+
         # Any post processing, like checking results and additional action.
         #
         self.post_run()
@@ -97,6 +100,11 @@ class BaseSearchForm(Base):
         """ Any manipulations to the query that need the actual
         result, e.g. count, should go here """
 
+        pass
+
+    def ordering(self):
+        """ Apply ordering to the SearchQuerySet
+        """
         pass
 
 
