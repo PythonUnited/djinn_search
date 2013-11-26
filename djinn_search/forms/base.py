@@ -158,11 +158,9 @@ class SearchForm(BaseSearchForm):
 
             self.and_or_tainted = True
 
-            self.sqs = SearchQuerySet()
-            self.sqs = self.sqs.filter(content=parts[0])
+            aq = AutoQuery(self.cleaned_data['q'])
 
-            for part in parts[1:]:
-                self.sqs = self.sqs.filter_or(content=part)
+            self.sqs = self.sqs.filter_or(content=aq)
 
     def _filter_allowed(self):
 
