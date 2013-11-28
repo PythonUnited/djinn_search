@@ -1,4 +1,6 @@
 from django.conf import settings
+from django import forms
+from django.utils.translation import ugettext_lazy as _
 from haystack.forms import SearchForm as Base
 from haystack.inputs import AutoQuery
 from haystack.query import SearchQuerySet
@@ -20,14 +22,18 @@ class BaseSearchForm(Base):
 
         super(BaseSearchForm, self).__init__(*args, **kwargs)
 
-    def search(self):
+    def search(self, skip_filters=None):
 
         """ Sadly we have to override the base haystack search
         completely. It just doesn't do what we want...  Add extra
         filters to the base search, so as to allow extending classes
         to do more sophisticated search. Other than the default
         implementation of haystack we don't return the searchqueryset,
-        since it means that it is execeuted once more..."""
+        since it means that it is executed once more...
+
+        If skip_filters is provided, forget about the call to
+        extra_filters...
+        """
 
         if not self.is_valid():
             return self.no_query_found()
@@ -45,8 +51,8 @@ class BaseSearchForm(Base):
         if self.load_all:
             self.sqs = self.sqs.load_all()
 
-        # Apply extra filters before doing the actual query
-        self.extra_filters()
+        # Apply extra filters before doing the actual query    
+        self.extra_filters(skip_filters=skip_filters)
 
         # Apply ordering
         self.ordering()
@@ -73,9 +79,10 @@ class BaseSearchForm(Base):
 
         return {}
 
-    def extra_filters(self):
+    def extra_filters(self, skip_filters=None):
 
-        """ Override this method to apply extra filters """
+        """ Override this method to apply extra filters. If skip_filters
+        is a list, any filters in this list will be skipped """
 
         pass
 
@@ -104,9 +111,12 @@ class BaseSearchForm(Base):
         pass
 
     def ordering(self):
-        """ Apply ordering to the SearchQuerySet
+
+        """ Apply ordering to the SearchQuerySet.
         """
-        pass
+
+        if self.cleaned_data.get("order_by"):
+            self.sqs = self.sqs.order_by(self.cleaned_data.get("order_by"))
 
 
 class SearchForm(BaseSearchForm):
@@ -119,6 +129,10 @@ class SearchForm(BaseSearchForm):
 
     content_type = CTField(required=False)
     meta_type = CTField(required=False)
+    order_by = forms.CharField(required=False,
+                               # Translators: djinn_search order_by label
+                               label=_('Order by'),
+                               initial='relevance')
 
     # Tainted marker for default 'AND' that has been reinterpreted as 'OR',
     #
@@ -133,16 +147,25 @@ class SearchForm(BaseSearchForm):
 
         return super(SearchForm, self).__init__(*args, **kwargs)
 
-    def extra_filters(self):
+    def extra_filters(self, skip_filters=None):
 
-        self._filter_allowed()
-        self._filter_ct()
-        self._filter_meta_ct()
+        if not skip_filters:
+            skip_filters = []
+
+        if not "allowed" in skip_filters:
+            self._filter_allowed()
+
+        if not "ct" in skip_filters:
+            self._filter_ct()
+
+        if not "meta_ct" in skip_filters:
+            self._filter_meta_ct()
 
     def post_run(self):
 
         self._detect_and_or()
         self._add_ct_facet()
+        self._add_meta_ct_facet()
 
     def _detect_and_or(self):
 
@@ -194,6 +217,10 @@ class SearchForm(BaseSearchForm):
     def _add_ct_facet(self):
 
         self.sqs = self.sqs.facet(DJANGO_CT)
+
+    def _add_meta_ct_facet(self):
+
+        self.sqs = self.sqs.facet("meta_ct")
 
     def run_kwargs(self):
 
