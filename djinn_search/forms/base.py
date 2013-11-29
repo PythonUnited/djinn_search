@@ -226,8 +226,13 @@ class SearchForm(BaseSearchForm):
 
         """ Provide spelling query if INCLUDE_SPELLING is set """
 
-        if self.sqs.query.backend.include_spelling:
-            return {'spelling_query': self.spelling_query}
+        kwargs = {}
+
+        if self.sqs.query.backend.include_spelling and \
+                self.cleaned_data.get('q'):
+            kwargs['spelling_query'] = self.spelling_query
+
+        return kwargs
 
 
 class FixedFilterSearchForm(SearchForm):
