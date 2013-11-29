@@ -12,10 +12,7 @@
 {% block alerts %}
 {% if is_tainted_and_or %}
 <div class="alert">
-  {% blocktrans %}
-  The query you specified didn't return any results. 
-  Results shown are for the separate parts of the query.
-  {% endblocktrans %}
+  {% trans "The query you specified didn't return any results. Results shown are for the separate parts of the query." %}
 </div>
 {% endif %}
 
