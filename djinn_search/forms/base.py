@@ -51,11 +51,8 @@ class BaseSearchForm(Base):
         if self.load_all:
             self.sqs = self.sqs.load_all()
 
-        # Apply extra filters before doing the actual query    
+        # Apply extra filters before doing the actual query
         self.extra_filters(skip_filters=skip_filters)
-
-        # Apply ordering
-        self.ordering()
 
         # Any post processing, like checking results and additional action.
         #
@@ -110,14 +107,6 @@ class BaseSearchForm(Base):
 
         pass
 
-    def ordering(self):
-
-        """ Apply ordering to the SearchQuerySet.
-        """
-
-        if self.cleaned_data.get("order_by"):
-            self.sqs = self.sqs.order_by(self.cleaned_data.get("order_by"))
-
 
 class SearchForm(BaseSearchForm):
 
@@ -131,8 +120,7 @@ class SearchForm(BaseSearchForm):
     meta_type = CTField(required=False)
     order_by = forms.CharField(required=False,
                                # Translators: djinn_search order_by label
-                               label=_('Order by'),
-                               initial='relevance')
+                               label=_('Order by'))
 
     # Tainted marker for default 'AND' that has been reinterpreted as 'OR',
     #
@@ -166,6 +154,7 @@ class SearchForm(BaseSearchForm):
         self._detect_and_or()
         self._add_ct_facet()
         self._add_meta_ct_facet()
+        self._order()
 
     def _detect_and_or(self):
 
@@ -221,6 +210,13 @@ class SearchForm(BaseSearchForm):
     def _add_meta_ct_facet(self):
 
         self.sqs = self.sqs.facet("meta_ct")
+
+    def _order(self):
+
+        """ Apply order is found in the order_by parameter """
+
+        if self.cleaned_data.get("order_by"):
+            self.sqs = self.sqs.order_by(self.cleaned_data["order_by"])
 
     def run_kwargs(self):
 
