@@ -89,4 +89,4 @@ class CTSearchView(SearchView, SingleObjectMixin):
         self.request = request
         self.object = self.get_object()
 
-        super(CTSearchView, self).__call__(request)
+        return super(CTSearchView, self).__call__(request)

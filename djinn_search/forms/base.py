@@ -10,6 +10,11 @@ from djinn_search.utils import split_query
 from djinn_search.fields.contenttype import CTField
 
 
+ORDER_BY_OPTIONS = (('', _('Relevance')),
+                    ('changed', _('Last modified')),
+                    ('title_exact', _('Alphabetical')))
+
+
 class BaseSearchForm(Base):
 
     """ Base form for Djinn search. This always takes the user into
@@ -120,7 +125,9 @@ class SearchForm(BaseSearchForm):
     meta_type = CTField(required=False)
     order_by = forms.CharField(required=False,
                                # Translators: djinn_search order_by label
-                               label=_('Order by'))
+                               label=_('Order by'),
+                               widget=forms.Select(choices=ORDER_BY_OPTIONS)
+                               )
 
     # Tainted marker for default 'AND' that has been reinterpreted as 'OR',
     #
