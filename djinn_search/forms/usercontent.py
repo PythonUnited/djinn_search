@@ -1,5 +1,6 @@
 from django import forms
 from base import FixedFilterSearchForm
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserContentSearchForm(FixedFilterSearchForm):
@@ -7,7 +8,12 @@ class UserContentSearchForm(FixedFilterSearchForm):
     owner = forms.CharField(required=True)
 
     spelling_query = None
-    fixed_filters = ["owner"]
+
+    @property
+    def fixed_filters(self):
+
+        # Translators: Display name for the fixed owner filter 
+        return [{'id': 'owner', 'name': _(u'Owner')}]
 
     def extra_filters(self, skip_filters=None):
 

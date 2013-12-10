@@ -245,6 +245,10 @@ class FixedFilterSearchForm(SearchForm):
     @property
     def fixed_filters(self):
 
-        """ Implement this call to return the filters that are required """
+        """
+        Implement this call to return the filters that are required
+        each element should be a map with an id (the value) and a name
+        {'id': 'owner', 'name': 'Jan Barkhof'}
+        """
 
         return []
