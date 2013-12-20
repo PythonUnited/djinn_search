@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-29 16:46+0100\n"
+"POT-Creation-Date: 2013-12-20 09:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: forms/base.py:13
+msgid "Relevance"
+msgstr ""
+
+#: forms/base.py:14
+msgid "Last modified"
+msgstr ""
+
+#: forms/base.py:15
+msgid "Alphabetical"
+msgstr ""
+
 #. Translators: djinn_search order_by label
-#: forms/base.py:134
+#: forms/base.py:128
 msgid "Order by"
+msgstr ""
+
+#. Translators: Display name for the fixed group filter
+#: forms/groupcontent.py:16
+msgid "Group"
+msgstr ""
+
+#. Translators: Display name for the fixed owner filter
+#: forms/usercontent.py:16
+msgid "Owner"
 msgstr ""
 
 #: templates/djinn_search/search.html:15
