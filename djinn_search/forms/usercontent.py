@@ -12,8 +12,7 @@ class UserContentSearchForm(FixedFilterSearchForm):
     @property
     def fixed_filters(self):
 
-        # Translators: Display name for the fixed owner filter 
-        return [{'id': 'owner', 'name': _(u'Owner')}]
+        return [{'id': 'owner', 'name': str(self.user.profile)}]
 
     def extra_filters(self, skip_filters=None):
 
