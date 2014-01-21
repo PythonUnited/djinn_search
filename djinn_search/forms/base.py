@@ -11,7 +11,8 @@ from djinn_search.fields.contenttype import CTField
 
 
 ORDER_BY_OPTIONS = (('', _('Relevance')),
-                    ('changed', _('Last modified')),
+                    #('changed', _('Last modified')),
+                    ('-published', _('Published')),
                     ('title_exact', _('Alphabetical')))
 
 
