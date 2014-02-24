@@ -1,6 +1,7 @@
 from django import forms
-from base import FixedFilterSearchForm
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
+from base import FixedFilterSearchForm
 
 
 class UserContentSearchForm(FixedFilterSearchForm):
@@ -17,3 +18,10 @@ class UserContentSearchForm(FixedFilterSearchForm):
     def extra_filters(self, skip_filters=None):
 
         self.sqs = self.sqs.filter(owner=self.cleaned_data['owner'])
+
+        # Although the owner own's his/her profile, this is not
+        # regarded 'content'
+        #
+        self.sqs = self.sqs.exclude(
+            meta_ct=(settings.DJINN_USERPROFILE_MODEL or
+                     "djinn_profiles.userprofile"))
