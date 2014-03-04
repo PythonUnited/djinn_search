@@ -12,7 +12,7 @@ requires = [
 
 setup(name='djinn_search',
       version="1.0.0",
-      description='Djinn Intranet core',
+      description='Djinn Intranet search module',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
         "Development Status :: 3 - Alpha",
