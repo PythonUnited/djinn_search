@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from base import FixedFilterSearchForm
 
@@ -16,6 +15,9 @@ class UserContentSearchForm(FixedFilterSearchForm):
         return [{'id': 'owner', 'name': str(self.user.profile)}]
 
     def extra_filters(self, skip_filters=None):
+
+        super(UserContentSearchForm, self).extra_filters(
+            skip_filters=skip_filters)
 
         self.sqs = self.sqs.filter(owner=self.cleaned_data['owner'])
 
