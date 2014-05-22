@@ -32,18 +32,18 @@ class BaseSearchView(Base):
         if self.form.spelling_query:
             try:
                 suggestion = self.results.query.get_spelling_suggestion()
-                
+
                 if not hasattr(suggestion, "encode"):
                     suggestion = ""
             except:
                 pass
 
-        return {"suggestion": suggestion, 
+        return {"suggestion": suggestion,
                 "is_tainted_and_or": self.is_tainted_and_or}
 
 
 class SearchView(BaseSearchView):
-    
+
     """ Basic search """
 
     def create_response(self):
@@ -79,7 +79,7 @@ class CTSearchView(SearchView, SingleObjectMixin):
         ctx = super(CTSearchView, self).extra_context()
 
         ctx.update(self.get_context_data())
-    
+
         ctx['object'] = self.object
 
         return ctx

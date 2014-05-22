@@ -222,7 +222,7 @@ class SearchForm(BaseSearchForm):
     def _order(self):
 
         """ Apply order is found in the order_by parameter """
-        
+
         if self.cleaned_data.get("order_by"):
             self.sqs = self.sqs.order_by(self.cleaned_data["order_by"])
 
