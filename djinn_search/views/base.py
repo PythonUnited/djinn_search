@@ -15,7 +15,18 @@ class BaseSearchView(Base):
 
         form_kwargs['user'] = self.request.user
 
+        if not form_kwargs.get('initial'):
+            form_kwargs['initial'] = {}
+
+        form_kwargs['initial'].update(self.get_initial())
+
         return super(BaseSearchView, self).build_form(form_kwargs=form_kwargs)
+
+    def get_initial(self):
+
+        """ Provide initial form values """
+
+        return {}
 
     def is_tainted_and_or(self):
 
