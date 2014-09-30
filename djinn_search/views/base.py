@@ -15,16 +15,24 @@ class BaseSearchView(Base):
 
         form_kwargs['user'] = self.request.user
 
-        if not form_kwargs.get('initial'):
-            form_kwargs['initial'] = {}
+        form = super(BaseSearchView, self).build_form(form_kwargs=form_kwargs)
 
-        form_kwargs['initial'].update(self.get_initial())
+        # Override mutable if need be... Yes this is somewhat 666-ish.
+        #
+        _defaults = self.get_defaults()
 
-        return super(BaseSearchView, self).build_form(form_kwargs=form_kwargs)
+        if _defaults:
+            form.data._mutable = True
+            for key, val in _defaults.items():
+                if not form.data.get(key):
+                    form.data[key] = val
 
-    def get_initial(self):
+        return form
 
-        """ Provide initial form values """
+    def get_defaults(self):
+
+        """ Provide initial form values that are used when these variables
+        are not in the request"""
 
         return {}
 
