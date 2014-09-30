@@ -1,3 +1,7 @@
+1.0.2
+=====
+* Added get_defaults for default settings to search form
+
 1.0.1
 =====
 * Fixed missing super call
