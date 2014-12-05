@@ -250,6 +250,8 @@ class FixedFilterSearchForm(SearchForm):
         Implement this call to return the filters that are required
         each element should be a map with an id (the value) and a name
         {'id': 'owner', 'name': 'Jan Barkhof'}
+        TODO: this currently is used as a view feature, but should really
+        be used only in actual filtering.
         """
 
         return []

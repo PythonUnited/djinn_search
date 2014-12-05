@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 from djinn_search.views.base import SearchView
 from djinn_search.forms.base import SearchForm
