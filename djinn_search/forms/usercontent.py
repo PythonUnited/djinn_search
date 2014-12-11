@@ -12,7 +12,8 @@ class UserContentSearchForm(FixedFilterSearchForm):
     @property
     def fixed_filters(self):
 
-        return [{'id': 'owner', 'name': str(self.user.profile)}]
+        return [{'id': 'owner', 'value': self.user,
+                 'name': str(self.user.profile)}]
 
     def extra_filters(self, skip_filters=None):
 

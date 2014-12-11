@@ -13,7 +13,8 @@ class GroupContentSearchForm(FixedFilterSearchForm):
     def fixed_filters(self):
 
         # Translators: Display name for the fixed group filter
-        return [{'id': 'group', 'name': _(u'Group')}]
+        return [{'id': 'group', 'value': self.cleaned_data['group'],
+                 'name': _(u'Group')}]
 
     def extra_filters(self, skip_filters=None):
 
