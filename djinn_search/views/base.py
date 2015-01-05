@@ -1,5 +1,6 @@
 from haystack.views import SearchView as Base
 from django.views.generic.detail import SingleObjectMixin
+from djinn_contenttypes.views.base import HistoryMixin
 
 
 class BaseSearchView(Base):
@@ -61,7 +62,7 @@ class BaseSearchView(Base):
                 "is_tainted_and_or": self.is_tainted_and_or}
 
 
-class SearchView(BaseSearchView):
+class SearchView(BaseSearchView, HistoryMixin):
 
     """ Basic search """
 
@@ -75,9 +76,15 @@ class SearchView(BaseSearchView):
 
         res = super(SearchView, self).create_response()
 
+        content_type = "text/html"
+
         if self.request.is_ajax():
             res._headers['content-type'] = \
                 ('Content-Type', 'text/plain; charset=utf-8')
+            content_type = "text/plain"
+
+        if content_type == "text/html":
+            self.add_to_history()
 
         return res
 
