@@ -1,6 +1,6 @@
 from haystack.views import SearchView as Base
 from django.views.generic.detail import SingleObjectMixin
-from djinn_contenttypes.views.base import HistoryMixin
+from djinn_contenttypes.views.base import HistoryMixin, AcceptMixin
 
 
 class BaseSearchView(Base):
@@ -62,28 +62,15 @@ class BaseSearchView(Base):
                 "is_tainted_and_or": self.is_tainted_and_or}
 
 
-class SearchView(BaseSearchView, HistoryMixin):
+class SearchView(AcceptMixin, BaseSearchView, HistoryMixin):
 
     """ Basic search """
 
     def create_response(self):
 
-        """
-        Generates the actual HttpResponse to send back to the
-        user. This may be an ajax call, in which case we set the
-        content type to plain.
-        """
-
         res = super(SearchView, self).create_response()
 
-        content_type = "text/html"
-
-        if self.request.is_ajax():
-            res._headers['content-type'] = \
-                ('Content-Type', 'text/plain; charset=utf-8')
-            content_type = "text/plain"
-
-        if content_type == "text/html":
+        if not self.request.is_ajax():
             self.add_to_history()
 
         return res
