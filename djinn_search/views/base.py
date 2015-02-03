@@ -70,6 +70,13 @@ class SearchView(AcceptMixin, BaseSearchView, HistoryMixin):
 
         res = super(SearchView, self).create_response()
 
+        if self.is_json:
+            res._headers['content-type'] = (
+                'Content-Type', 'application/json; charset=utf-8')
+        elif self.is_text:
+            res._headers['content-type'] = (
+                'Content-Type', 'text/plain; charset=utf-8')
+
         if not self.request.is_ajax():
             self.add_to_history()
 
