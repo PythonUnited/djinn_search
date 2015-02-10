@@ -1,6 +1,7 @@
 1.0.3
 =====
 * Move to Django 1.6.x
+* implement history mixin for search
 
 1.0.2
 =====
