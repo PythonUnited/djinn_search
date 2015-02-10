@@ -148,13 +148,13 @@ class SearchForm(BaseSearchForm):
         if not skip_filters:
             skip_filters = []
 
-        if not "allowed" in skip_filters:
+        if "allowed" not in skip_filters:
             self._filter_allowed()
 
-        if not "ct" in skip_filters:
+        if "ct" not in skip_filters:
             self._filter_ct()
 
-        if not "meta_ct" in skip_filters:
+        if "meta_ct" not in skip_filters:
             self._filter_meta_ct()
 
     def post_run(self):
