@@ -23,7 +23,10 @@ class BaseSearchView(Base):
         _defaults = self.get_defaults()
 
         if _defaults:
-            form.data._mutable = True
+            try:
+                form.data._mutable = True
+            except:
+                pass
             for key, val in _defaults.items():
                 if not form.data.get(key):
                     form.data[key] = val

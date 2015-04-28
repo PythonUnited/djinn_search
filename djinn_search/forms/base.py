@@ -143,6 +143,12 @@ class SearchForm(BaseSearchForm):
 
         return super(SearchForm, self).__init__(*args, **kwargs)
 
+    def clean_q(self):
+
+        data = self.cleaned_data
+
+        return data['q'].replace("'", "*")
+
     def extra_filters(self, skip_filters=None):
 
         if not skip_filters:

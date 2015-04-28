@@ -11,7 +11,7 @@ requires = [
     ]
 
 setup(name='djinn_search',
-      version="1.0.3",
+      version="1.0.4",
       description='Djinn Intranet search module',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
