@@ -151,6 +151,11 @@ class SearchForm(BaseSearchForm):
 
     def extra_filters(self, skip_filters=None):
 
+        """TODO: the name implies that you can override this method in
+        extend classes. This is really not the case...
+
+        """
+
         if not skip_filters:
             skip_filters = []
 
