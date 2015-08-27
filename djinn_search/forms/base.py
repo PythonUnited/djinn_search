@@ -20,6 +20,8 @@ class BaseSearchForm(Base):
 
     """ Base form for Djinn search. This always takes the user into
     account, to be able to check on allowed content. """
+    keywords = forms.CharField(required=False, label=_('Keywords'),
+                        widget=forms.TextInput(attrs={'type': 'search'}))
 
     def __init__(self, *args, **kwargs):
 
@@ -162,6 +164,10 @@ class SearchForm(BaseSearchForm):
 
         if "meta_ct" not in skip_filters:
             self._filter_meta_ct()
+
+        if self.cleaned_data.get('keywords', None):
+            self.sqs = self.sqs.filter(
+                keywords__exact=self.cleaned_data.get('keywords', None))
 
     def post_run(self):
 
