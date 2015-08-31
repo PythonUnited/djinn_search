@@ -1,3 +1,7 @@
+1.0.5
+=====
+* allowing spaces in keywords
+
 1.0.4
 =====
 * form data may not be mutable or may be a dict
