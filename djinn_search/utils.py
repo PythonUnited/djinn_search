@@ -1,4 +1,5 @@
 from haystack.inputs import AutoQuery, Clean, Exact, Not
+from haystack import connections as haystack_connections
 
 
 def split_query(query_string, query_obj):
@@ -32,3 +33,12 @@ def split_query(query_string, query_obj):
             query_bits.append(Clean(token).prepare(query_obj))
 
     return query_bits
+
+
+def update_index_for_instance(content_instance):
+
+    unified_index = haystack_connections['default'].get_unified_index()
+
+    index = unified_index.get_index(content_instance.__class__)
+
+    index.update_object(content_instance)
