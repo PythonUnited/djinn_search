@@ -1,3 +1,7 @@
+1.0.7
+=====
+* not using RealtimeSearchIndex anymore. Better for performance
+
 1.0.6
 =====
 * allowing spaces in keywords
