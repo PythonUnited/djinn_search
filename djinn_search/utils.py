@@ -1,5 +1,6 @@
 from haystack.inputs import AutoQuery, Clean, Exact, Not
 from haystack import connections as haystack_connections
+from haystack.exceptions import NotHandled
 
 
 def split_query(query_string, query_obj):
@@ -39,6 +40,11 @@ def update_index_for_instance(content_instance):
 
     unified_index = haystack_connections['default'].get_unified_index()
 
-    index = unified_index.get_index(content_instance.__class__)
+    try:
+        index = unified_index.get_index(content_instance.__class__)
 
-    index.update_object(content_instance)
+        index.update_object(content_instance)
+
+    except NotHandled:
+
+        pass
