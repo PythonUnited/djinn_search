@@ -156,8 +156,8 @@ class SearchForm(BaseSearchForm):
         if not skip_filters:
             skip_filters = []
 
-        if "allowed" not in skip_filters:
-            self._filter_allowed()
+        if not self.user.is_superuser and "allowed" not in skip_filters:
+                self._filter_allowed()
 
         if "ct" not in skip_filters:
             self._filter_ct()
