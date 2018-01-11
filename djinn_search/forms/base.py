@@ -75,7 +75,7 @@ class BaseSearchForm(Base):
 
         """ Check whether anything at all was asked """
 
-        return filter(lambda x: x, self.cleaned_data.values())
+        return list(filter(lambda x: x, self.cleaned_data.values()))
 
     def run_kwargs(self):
 

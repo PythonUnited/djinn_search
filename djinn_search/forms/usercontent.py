@@ -1,6 +1,6 @@
 from django import forms
 from django.conf import settings
-from base import FixedFilterSearchForm
+from .base import FixedFilterSearchForm
 
 
 class UserContentSearchForm(FixedFilterSearchForm):

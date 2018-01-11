@@ -1,5 +1,5 @@
 from django import forms
-from base import FixedFilterSearchForm
+from .base import FixedFilterSearchForm
 from django.utils.translation import ugettext_lazy as _ 
 
 
