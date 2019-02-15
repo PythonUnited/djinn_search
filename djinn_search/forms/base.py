@@ -10,7 +10,7 @@ from djinn_search.utils import split_query
 from djinn_search.fields.contenttype import CTField
 
 
-ORDER_BY_OPTIONS = (('', _('Relevance')),
+ORDER_BY_OPTIONS = (('relevance', _('Relevance')),
                     ('-changed', _('Last modified')),
                     ('-published', _('Published')),
                     ('title_exact', _('Alphabetical')))
@@ -234,9 +234,9 @@ class SearchForm(BaseSearchForm):
     def _order(self):
 
         """ Apply order is found in the order_by parameter """
-
         if self.cleaned_data.get("order_by"):
-            self.sqs = self.sqs.order_by(self.cleaned_data["order_by"])
+            if self.cleaned_data.get("order_by") != 'relevance':
+                self.sqs = self.sqs.order_by(self.cleaned_data["order_by"])
 
     def run_kwargs(self):
 
