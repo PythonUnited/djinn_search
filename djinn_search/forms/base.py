@@ -49,9 +49,18 @@ class BaseSearchForm(Base):
         if not self.has_query:
             return self.no_query_found()
 
-        if self.cleaned_data.get('q'):
-            self.sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
-            self.spelling_query = AutoQuery(self.cleaned_data['q']). \
+        if self.cleaned_data.get("q"):
+            # This mechanism enables keyword search that matches part of words
+            # Solution is in the __contains bit.
+            aq= AutoQuery(self.cleaned_data.get("q"))
+            aq.post_process = True
+            kwargs = {
+                'content__contains': aq
+            }
+            self.sqs = self.searchqueryset.filter(**kwargs)
+            # self.sqs = self.searchqueryset.auto_query(self.cleaned_data.get("q"))
+
+            self.spelling_query = AutoQuery(self.cleaned_data.get("q")). \
                 query_string
         else:
             self.sqs = SearchQuerySet()
@@ -183,7 +192,7 @@ class SearchForm(BaseSearchForm):
         an (OR query). Unless only one term was given in the first
         place... """
 
-        parts = split_query(self.cleaned_data['q'], self.sqs.query)
+        parts = split_query(self.cleaned_data.get("q"), self.sqs.query)
 
         if len(parts) > 1 and \
                 getattr(settings, 'HAYSTACK_DEFAULT_OPERATOR', "AND") == "AND"\
@@ -219,9 +228,17 @@ class SearchForm(BaseSearchForm):
 
     def _filter_meta_ct(self):
 
+        # BEGIN MJB ZOEKFILTERS
+        # for ct in self.cleaned_data['meta_type']:
+        #
+        #     self.sqs = self.sqs.filter(meta_ct=ct)
+        sq = SQ()
         for ct in self.cleaned_data['meta_type']:
+            sq.add(SQ(meta_ct=ct), SQ.OR)
 
-            self.sqs = self.sqs.filter(meta_ct=ct)
+        if len(self.cleaned_data['meta_type']):
+            self.sqs = self.sqs.filter(sq)
+        # END MJB ZOEKFILTERS
 
     def _add_ct_facet(self):
 
@@ -245,7 +262,7 @@ class SearchForm(BaseSearchForm):
         kwargs = {}
 
         if self.sqs.query.backend.include_spelling and \
-                self.cleaned_data.get('q'):
+                self.cleaned_data.get("q"):
             kwargs['spelling_query'] = self.spelling_query
 
         return kwargs
