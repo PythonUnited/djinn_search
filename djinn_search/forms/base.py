@@ -46,8 +46,8 @@ class BaseSearchForm(Base):
         if not self.is_valid():
             return self.no_query_found()
 
-        if not self.has_query:
-            return self.no_query_found()
+        # if not self.has_query:
+        #     return self.no_query_found()
 
         if self.cleaned_data.get("q"):
             # This mechanism enables keyword search that matches part of words
