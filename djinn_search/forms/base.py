@@ -220,11 +220,17 @@ class SearchForm(BaseSearchForm):
 
     def _filter_ct(self):
 
+        # for ct in self.cleaned_data['content_type']:
+        #
+        #     _filter = {DJANGO_CT: ct}
+        #
+        #     self.sqs = self.sqs.filter(**_filter)
+        #
+        sq = SQ()
         for ct in self.cleaned_data['content_type']:
-
-            _filter = {DJANGO_CT: ct}
-
-            self.sqs = self.sqs.filter(**_filter)
+            sq.add(SQ(django_ct=ct), SQ.OR)
+        if len(self.cleaned_data['content_type']):
+            self.sqs = self.sqs.filter(sq)
 
     def _filter_meta_ct(self):
 
