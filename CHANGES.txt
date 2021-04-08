@@ -1,3 +1,5 @@
+* fixed use of the field 'content': content_auto
+
 1.0.7
 =====
 * not using RealtimeSearchIndex anymore. Better for performance
