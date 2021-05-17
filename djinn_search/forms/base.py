@@ -187,6 +187,10 @@ class SearchForm(BaseSearchForm):
         self._order()
 
     def _detect_and_or(self):
+        from haystack.inputs import Clean
+
+        # HaystackInput = AutoQuery
+        HaystackInput = Clean
 
         """ let's see whether we have something useful. If not, we'll
         try the separate query terms that are regular words and go for
@@ -201,10 +205,12 @@ class SearchForm(BaseSearchForm):
 
             self.and_or_tainted = True
 
-            content_filter = SQ(content=AutoQuery(parts[0]))
+            # content_filter = SQ(content=AutoQuery(parts[0]))
+            content_filter = SQ(content=HaystackInput(parts[0]))
 
             for part in parts[1:]:
-                content_filter = content_filter | SQ(content=AutoQuery(part))
+                # content_filter = content_filter | SQ(content=AutoQuery(part))
+                content_filter = content_filter | SQ(content=HaystackInput(part))
 
             self.sqs.query.query_filter.children[0] = content_filter
 
