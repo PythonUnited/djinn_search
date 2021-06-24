@@ -18,7 +18,7 @@ def split_query(query_string, query_obj):
         elif not rough_token in exacts:
             # We have something that's not an exact match but may have more
             # than on word in it.
-            tokens.extend(rough_token.split(' '))
+            tokens.extend(rough_token.split(','))
         else:
             tokens.append(rough_token)
 
