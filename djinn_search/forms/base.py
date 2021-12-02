@@ -55,7 +55,8 @@ class BaseSearchForm(Base):
             aq= AutoQuery(self.cleaned_data.get("q"))
             aq.post_process = True
             kwargs = {
-                'content__contains': aq
+                # 'content__contains': aq
+                'text__contains': aq
             }
             self.sqs = self.searchqueryset.filter(**kwargs)
             # self.sqs = self.searchqueryset.auto_query(self.cleaned_data.get("q"))
