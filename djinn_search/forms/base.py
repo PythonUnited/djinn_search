@@ -8,7 +8,7 @@ from haystack.constants import DJANGO_CT
 from haystack.backends import SQ
 from djinn_search.utils import split_query
 from djinn_search.fields.contenttype import CTField
-
+from pgauth.util import get_usergroups_by_user
 
 ORDER_BY_OPTIONS = (('relevance', _('Relevance')),
                     ('-changed', _('Last modified')),
@@ -216,7 +216,7 @@ class SearchForm(BaseSearchForm):
 
         access_to = ['group_users', 'user_%s' % self.user.username]
 
-        for group in self.user.usergroup_set.all():
+        for group in get_usergroups_by_user(self.user):
             access_to.append('group_%d' % group.id)
 
         self.sqs = self.sqs.filter(allow_list__in=access_to)
