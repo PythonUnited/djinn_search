@@ -141,6 +141,7 @@ class SearchForm(BaseSearchForm):
                                label=_('Order by'),
                                widget=forms.Select(choices=ORDER_BY_OPTIONS)
                                )
+    category_slug = forms.CharField(required=False)
 
     # Tainted marker for default 'AND' that has been reinterpreted as 'OR',
     #
@@ -175,6 +176,9 @@ class SearchForm(BaseSearchForm):
         if "meta_ct" not in skip_filters:
             self._filter_meta_ct()
 
+        if "category_slug" not in skip_filters:
+            self._filter_category_slug()
+
         if self.cleaned_data.get('keywords', None):
             self.sqs = self.sqs.filter(
                 keywords__exact=self.cleaned_data.get('keywords', None))
@@ -184,6 +188,7 @@ class SearchForm(BaseSearchForm):
         self._detect_and_or()
         self._add_ct_facet()
         self._add_meta_ct_facet()
+        self._add_category_slug_facet()
         self._order()
 
     def _detect_and_or(self):
@@ -249,6 +254,14 @@ class SearchForm(BaseSearchForm):
             self.sqs = self.sqs.filter(sq)
         # END MJB ZOEKFILTERS
 
+    def _filter_category_slug(self):
+        sq = SQ()
+        cat_slug = self.cleaned_data['category_slug']
+        sq.add(SQ(category_slug=cat_slug), SQ.OR)
+
+        if len(self.cleaned_data['category_slug']):
+            self.sqs = self.sqs.filter(sq)
+
     def _add_ct_facet(self):
 
         self.sqs = self.sqs.facet(DJANGO_CT)
@@ -256,6 +269,10 @@ class SearchForm(BaseSearchForm):
     def _add_meta_ct_facet(self):
 
         self.sqs = self.sqs.facet("meta_ct")
+
+    def _add_category_slug_facet(self):
+
+        self.sqs = self.sqs.facet("category_slug")
 
     def _order(self):
 
